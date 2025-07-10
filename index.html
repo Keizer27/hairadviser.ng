@@ -1,43 +1,32 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HairAdviser.ng | AI-Powered Nigerian Hairstyles</title>
-  <meta name="description" content="Get personalized hairstyle recommendations for your face shape and hair type in Nigeria">
+  <title>HairAdviser.ng - 100% Free AI</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    :root {
-      --primary: #db2777;
-      --secondary: #f59e0b;
-    }
-  </style>
 </head>
-<body class="bg-gradient-to-br from-rose-50 to-amber-50 min-h-screen">
-  <main class="max-w-4xl mx-auto px-4 py-12">
-    <!-- Hero Section -->
-    <section class="text-center mb-16">
-      <h1 class="text-4xl md:text-6xl font-bold mb-6 text-rose-800">
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-amber-500">
-          Perfect Hairstyles
-        </span><br>
-        <span class="text-2xl md:text-3xl font-light">for Nigerian Hair</span>
-      </h1>
-      
-      <!-- AI Camera Widget -->
-      <div class="relative bg-white rounded-2xl shadow-xl overflow-hidden p-1 mx-auto max-w-md">
-        <div id="cameraWidget" class="h-96 bg-gray-100 flex items-center justify-center">
-          <button id="startBtn" class="btn-primary pulse">
-            📸 Start Analysis
-          </button>
-        </div>
-        <div id="loadingBar" class="h-1 bg-gradient-to-r from-rose-400 to-amber-400 hidden"></div>
-      </div>
-    </section>
-  </main>
+<body>
+  <div class="container">
+    <h1>🇳🇬 Free Nigerian Hair Advisor</h1>
+    
+    <div class="upload-box">
+      <input type="file" id="hairPhoto" accept="image/*">
+      <label for="hairPhoto" class="upload-btn">
+        📸 Upload Selfie
+      </label>
+      <div id="imagePreview"></div>
+    </div>
+    
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Analyzing with AI...</p>
+    </div>
+  </div>
 
+  <!-- Load TensorFlow and GPT4All -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@0.0.7/dist/blazeface.min.js"></script>
+  <script src="gpt4all.js"></script> <!-- GPT4All WebAssembly bundle -->
   <script src="script.js" type="module"></script>
 </body>
 </html>
