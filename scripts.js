@@ -1,50 +1,54 @@
+// Initialize GPT4All (WebAssembly)
+const gpt4all = new GPT4All({
+  model: 'ggml-gpt4all-j-v1.3-groovy.bin',
+  wasmPath: './' // Model files in same directory
+});
+
 // TensorFlow.js Analyzer
-class HairAdviser {
-  constructor() {
-    this.models = {};
-    this.initCamera();
-  }
-
-  async loadModels() {
-    this.models.face = await blazeface.load();
-    // Load MobileNet for hair classification
-    this.models.hair = await tf.loadGraphModel('https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v3_small_100_224/classification/5/default/1');
-  }
-
-  async analyze(image) {
-    const faces = await this.models.face.estimateFaces(image);
-    const hairType = await this.classifyHair(image);
-    return {
-      faceShape: this.detectFaceShape(faces),
-      hairType,
-      location: await this.getLocation()
-    };
-  }
-
-  // ... (Full implementation with error handling)
+async function analyzeImage(img) {
+  const faceModel = await blazeface.load();
+  const faces = await faceModel.estimateFaces(img);
+  
+  return {
+    faceShape: classifyFaceShape(faces), // Your custom function
+    hairType: classifyHairType(img), // Your custom function
+    location: "Nigeria"
+  };
 }
 
-// GPT4All Proxy
+// Generate Advice
 async function getHairAdvice(data) {
-  const response = await fetch('https://api.openrouter.ai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${OPENROUTER_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'gpt-4',
-      messages: [{
-        role: 'user',
-        content: `As a Nigerian hair expert, recommend 3 hairstyles for ${data.faceShape} face, ${data.hairType} hair in ${data.location}. Include care tips.`
-      }]
-    })
+  await gpt4all.load(); // Load GPT4All (~2GB model)
+  
+  const prompt = `
+    As a Nigerian hair expert, recommend:
+    1. 3 hairstyles for ${data.faceShape} face and ${data.hairType} hair
+    2. Weekly care routine for ${data.location} climate
+    3. DIY natural products
+    Reply in Nigerian Pidgin with emojis.
+  `;
+  
+  return await gpt4all.generate(prompt, {
+    maxTokens: 500,
+    temperature: 0.7
   });
-  return await response.json();
 }
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-  const adviser = new HairAdviser();
-  document.getElementById('startBtn').addEventListener('click', () => adviser.startAnalysis());
+// Handle Image Upload
+document.getElementById('hairPhoto').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  document.getElementById('loading').style.display = 'flex';
+  
+  const img = document.createElement('img');
+  img.src = URL.createObjectURL(file);
+  img.onload = async () => {
+    const analysis = await analyzeImage(img);
+    const advice = await getHairAdvice(analysis);
+    
+    // Store and redirect
+    sessionStorage.setItem('hairAdvice', advice);
+    window.location.href = 'results.html';
+  };
 });
